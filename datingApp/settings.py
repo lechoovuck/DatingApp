@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,11 +27,12 @@ DEBUG = True
 
 if not DEBUG:
     if load_dotenv(os.path.join(BASE_DIR, '.env'), verbose=True) is False:
-        SECRET_KEY = 'django-insecure-$id=sw%yw!#$#kz8rgykn**y!3fovwes3^ci^$)-ctpjjb+l1('
         raise Exception('Проверьте наличие файла .env')
 else:
     if load_dotenv(os.path.join(BASE_DIR, '.env-distr'), verbose=True) is False:
         raise Exception('Проверьте наличие файла .env-distr')
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 ALLOWED_HOSTS = []
 
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mainapp',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -61,7 +65,7 @@ ROOT_URLCONF = 'datingApp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,7 +87,7 @@ WSGI_APPLICATION = 'datingApp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.getenv('DB_NAME'),
+        'NAME': BASE_DIR / 'db.sqlite3',
         # 'USER': os.getenv('DB_USER'),
         # 'PASSWORD': os.getenv('DB_PASSWORD'),
         # 'HOST': os.getenv('DB_HOST'),
