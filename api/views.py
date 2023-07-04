@@ -1,12 +1,17 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import ParticipantSerializer
-from django.core.files.base import ContentFile
 from PIL import Image
 import tempfile
 import os
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.mail import send_mail
+from .serializers import *
+from .models import *
+
 
 class CreateParticipantView(APIView):
     def post(self, request):
@@ -37,11 +42,39 @@ class CreateParticipantView(APIView):
                 avatar_image.paste(watermark_image, (x, y), watermark_image)
                 # avatar_image.show()
                 
-                participant.avatar.save('avatar.png', ContentFile(avatar_image.tobytes()))
+                participant.avatar.save('avatar.png', 
+                                        ContentFile(avatar_image.tobytes()))
                 
                 os.remove(temp_image_path)
                 os.rmdir(temp_dir)
             
             participant.save()
-            return Response({'message': 'Участник успешно создан'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Участник успешно создан'}, 
+                            status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, 
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class MatchParticipantView(APIView):
+    def post(self, request, pk):
+        current_participant = get_object_or_404(Participant, pk=pk)
+        target_participant = get_object_or_404(Participant, pk=request.data.get('target_id'))
+        
+        current_participant.sympathy.add(target_participant)
+        if (target_participant.sympathy.filter(id=current_participant.id).exists() 
+            and current_participant.sympathy.filter(id=target_participant.id).exists()):
+            email_subject = f'Есть взаимная симпатия!'
+            email_body = f'Вы понравились {target_participant.first_name}! Почта участника: {target_participant.email}'
+            
+            # send_mail(email_subject, 
+            #           email_body, 
+            #           settings.EMAIL_HOST_USER, 
+            #           [current_participant.email, target_participant.email], 
+            #           fail_silently=False)
+            # TODO: SMTP
+                        
+            return Response({'message': email_body}, 
+                            status=status.HTTP_200_OK)
+        
+        return Response({'message': 'Оценка участника сохранена.'}, 
+                        status=status.HTTP_200_OK)

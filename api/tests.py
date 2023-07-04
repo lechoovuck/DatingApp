@@ -1,12 +1,11 @@
-import os
-from django.test import TestCase, override_settings
+import tempfile
+from django.test import TestCase, override_settings, RequestFactory
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APIClient
 from .models import Participant
-import tempfile
-from PIL import Image
+from .views import MatchParticipantView
 
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
@@ -20,7 +19,9 @@ class CreateParticipantTestCase(TestCase):
         with open('media/img/default_avi.png', 'rb') as file:
             file_content = file.read()
             
-        avatar = SimpleUploadedFile("avatar.png", file_content, content_type="image/png")
+        avatar = SimpleUploadedFile("avatar.png", 
+                                    file_content, 
+                                    content_type="image/png")
 
         data = {
             'avatar': avatar,
@@ -32,7 +33,9 @@ class CreateParticipantTestCase(TestCase):
         }
 
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, msg=response.data)
+        self.assertEqual(response.status_code, 
+                         status.HTTP_201_CREATED, 
+                         msg=response.data)
         self.assertEqual(Participant.objects.count(), 1)
 
         participant = Participant.objects.first()
@@ -44,3 +47,52 @@ class CreateParticipantTestCase(TestCase):
         
         participant.avatar.delete()
         
+
+class MatchParticipantViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.ivan = Participant.objects.create(
+            username='Ivan',
+            first_name='Ivan',
+            email='abc@mail.ru',
+            password='123456',
+            gender='M',
+        )
+        self.masha = Participant.objects.create(
+            username='Masha',
+            first_name='Masha',
+            email='123@mail.ru',
+            password='123456',
+            gender='F',
+        )
+
+    def test_match_participant(self):
+        ivan_request = self.factory.post(
+            f'/api/clients/{self.ivan.pk}/match/',
+            {'target_id': self.masha.pk},
+        )
+        ivan_response = MatchParticipantView.as_view()(ivan_request, 
+                                                   pk=self.ivan.pk)
+        self.assertEqual(ivan_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(ivan_response.data['message'], 
+                         'Оценка участника сохранена.')
+
+        self.assertEqual(list(self.ivan.sympathy.all()), 
+                         [self.masha])
+        self.assertFalse(self.masha.sympathy.exists())
+
+        masha_request = self.factory.post(
+            f'/api/clients/{self.masha.pk}/match/',
+            {'target_id': self.ivan.pk},
+        )
+        masha_response = MatchParticipantView.as_view()(masha_request, 
+                                                   pk=self.masha.pk)
+        self.assertEqual(masha_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(masha_response.data['message'], 
+                         f'Вы понравились {self.ivan.first_name}!'
+                         f' Почта участника: {self.ivan.email}')
+
+        self.assertEqual(list(self.masha.sympathy.all()), 
+                         [self.ivan])
+        self.assertEqual(list(self.ivan.sympathy.all()), 
+                         [self.masha])
