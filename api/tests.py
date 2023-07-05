@@ -96,3 +96,30 @@ class MatchParticipantViewTest(TestCase):
                          [self.ivan])
         self.assertEqual(list(self.ivan.sympathy.all()), 
                          [self.masha])
+
+
+class ParticipantListViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.ivan = Participant.objects.create(
+            username='Ivan',
+            first_name='Ivan',
+            email='abc@mail.ru',
+            password='123456',
+            gender='M',
+        )
+
+    def test_filter_participants(self):
+        url = reverse('api:list')
+        response = self.client.get(url, {'gender': 'M', 'first_name': 'Ivan'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['first_name'], 'Ivan')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        response = self.client.get(url, {'first_name': 'Nonexistent'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)

@@ -40,6 +40,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +50,10 @@ INSTALLED_APPS = [
     'mainapp',
     'api'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

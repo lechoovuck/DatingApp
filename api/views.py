@@ -2,15 +2,17 @@ from PIL import Image
 import tempfile
 import os
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 from .serializers import *
 from .models import *
+from .filters import *
 
 
 class CreateParticipantView(APIView):
@@ -78,3 +80,10 @@ class MatchParticipantView(APIView):
         
         return Response({'message': 'Оценка участника сохранена.'}, 
                         status=status.HTTP_200_OK)
+
+
+class ParticipantListView(generics.ListAPIView):
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ParticipantFilter
