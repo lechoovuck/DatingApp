@@ -1,0 +1,1 @@
+web gunicorn datingApp.wsgi:application --log-file -
