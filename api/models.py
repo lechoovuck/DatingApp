@@ -8,18 +8,20 @@ class Participant(AbstractUser):
         ('F', 'Женский'),
         ('O', 'Другой'),
     )
-    
+
     avatar = models.ImageField(upload_to='media/avatars/', blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    longitude = models.FloatField(null=True)
+    latitude = models.FloatField(null=True)
     sympathy = models.ManyToManyField('self', blank=True, symmetrical=False)
 
     groups = models.ManyToManyField(
         Group,
         blank=True,
-        related_name='participant_set', 
+        related_name='participant_set',
         related_query_name='user',
     )
     user_permissions = models.ManyToManyField(

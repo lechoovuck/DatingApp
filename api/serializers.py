@@ -7,4 +7,4 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Participant
-        fields = ['id', 'avatar', 'gender', 'first_name', 'last_name', 'email', 'password']
+        fields = '__all__'

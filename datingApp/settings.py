@@ -17,7 +17,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -34,8 +33,7 @@ else:
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -85,7 +83,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'datingApp.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -100,7 +97,6 @@ DATABASES = {
         # 'OPTIONS': os.getenv('DB_OPTIONS'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -120,7 +116,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -132,7 +127,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -143,15 +137,17 @@ STATICFILES_DIRS = [
     BASE_DIR / 'mainapp/static',
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost' 
-EMAIL_PORT = 123 
-EMAIL_USE_TLS = False 
-EMAIL_HOST_USER = 'no-reply@dating.com' 
-EMAIL_HOST_PASSWORD = 'super-password' 
-DEFAULT_FROM_EMAIL = 'no-reply@dating.com' 
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 123
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = 'no-reply@dating.com'
+EMAIL_HOST_PASSWORD = 'super-password'
+DEFAULT_FROM_EMAIL = 'no-reply@dating.com'
