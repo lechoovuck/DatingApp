@@ -63,6 +63,7 @@
 <details>
 
 <summary>English</summary>
+
 ## Installing dependencies
 
 1. Make sure you have Python version 3.10 or higher installed on your system.
