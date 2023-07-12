@@ -1,5 +1,7 @@
 # DatingApp
-Dating app
+<details>
+
+<summary>Русский</summary>
 
 ## Установка зависимостей
 
@@ -55,5 +57,67 @@ Dating app
 - Для создания суперпользователя (администратора), используйте следующую команду:
 `python manage.py createsuperuser`
 Следуйте инструкциям в терминале для указания имени пользователя и пароля.
+
+</details>
+
+<details>
+
+<summary>English</summary>
+## Installing dependencies
+
+1. Make sure you have Python version 3.10 or higher installed on your system.
+2. Clone the project repository to your local machine.
+3. In the terminal, navigate to the project directory.
+4. Create a virtual environment to isolate the project's dependencies:
+`python -m venv myenv`.
+
+5. Activate the virtual environment:
+
+- For Windows:
+
+  `myenv\Scripts\activate`.
+
+- For macOS/Linux:
+
+  `source myenv/bin/activate`.
+
+6. Install dependencies from the `requirements.txt` file:
+
+`pip install -r requirements.txt`.
+
+## Database Configuration
+
+1. Open the `settings.py` file in the project directory.
+2. Locate the `DATABASES` section and configure a connection to your database. You can use SQLite, MySQL, PostgreSQL or another database supported by Django.
+3. Uncomment the required parameters such as database name, user, password and host.
+4. Save the changes in the `settings.py` file.
+5. Create an .env file in the project directory.
+6. Similar to the `.env-dist` file, create environment variables and save this file.
+
+## Applying migrations
+
+1. In the terminal, navigate to the project directory.
+2. Run the following command to create the necessary tables in the database:
+`python manage.py makemigrations`.
+`python manage.py migrate`.
+
+
+## Start the development server
+
+1. In the terminal, navigate to the project directory.
+2. Start the Django development server using the following command:
+`python manage.py runserver`.
+
+
+3. Once the server is successfully started, open a web browser and navigate to `http://localhost:8000/` to access your Django project.
+
+## Additional steps
+
+- To configure static files and media files, refer to the appropriate Django documentation.
+- To create a superuser (administrator), use the following command:
+`python manage.py createsuperuser`.
+Follow the instructions in the terminal to specify a username and password.
+
+</details>
 
 
